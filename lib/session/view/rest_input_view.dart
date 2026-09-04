@@ -5,6 +5,7 @@ import '../../app/shared/theme.dart';
 import '../bloc/phone_session_bloc.dart';
 import '../bloc/phone_session_event.dart';
 import '../model/exercise.dart';
+import '../widget/number_carousel.dart';
 
 class RestInputView extends StatefulWidget {
   const RestInputView({
@@ -21,26 +22,23 @@ class RestInputView extends StatefulWidget {
 }
 
 class _RestInputViewState extends State<RestInputView> {
-  final _controller = TextEditingController();
+  static const _defaultValue = 10;
+
+  final _carouselKey = GlobalKey<NumberCarouselState>();
+  int _value = _defaultValue;
 
   @override
   void didUpdateWidget(RestInputView oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.exercise.id != widget.exercise.id) {
-      _controller.clear();
+      setState(() => _value = _defaultValue);
+      _carouselKey.currentState?.reset(_defaultValue);
     }
   }
 
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
   void _submit() {
-    final value = int.tryParse(_controller.text.trim());
-    if (value == null || value < 0) return;
-    context.read<PhoneSessionBloc>().add(ResultEntered(value));
+    if (_value < 0) return;
+    context.read<PhoneSessionBloc>().add(ResultEntered(_value));
   }
 
   @override
@@ -88,24 +86,12 @@ class _RestInputViewState extends State<RestInputView> {
               const SizedBox(height: 32),
               Text(label, style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: 12),
-              SizedBox(
-                width: 160,
-                child: TextField(
-                  controller: _controller,
-                  keyboardType: TextInputType.number,
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.headlineMedium,
-                  decoration: InputDecoration(
-                    border: const OutlineInputBorder(),
-                    hintText: '0',
-                    suffixText: widget.exercise.metricType == MetricType.reps
-                        ? 'x'
-                        : 's',
-                  ),
-                  onSubmitted: (_) => _submit(),
-                ),
+              NumberCarousel(
+                key: _carouselKey,
+                initial: _defaultValue,
+                onChanged: (value) => _value = value,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 24),
               FilledButton.icon(
                 onPressed: _submit,
                 icon: const Icon(Icons.send),
