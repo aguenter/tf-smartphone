@@ -20,6 +20,7 @@ class PhoneSessionBloc extends Bloc<PhoneSessionEvent, PhoneSessionState> {
     on<SelectionStartRequested>(_onSelectionStartRequested);
     on<WorkoutSelected>(_onWorkoutSelected);
     on<ResultEntered>(_onResultEntered);
+    on<TimerTick>(_onTimerTick);
 
     _subscription = _service.updates.listen(
       (update) => add(PhoneUpdateReceived(update)),
@@ -33,6 +34,7 @@ class PhoneSessionBloc extends Bloc<PhoneSessionEvent, PhoneSessionState> {
   List<Workout> _workouts = [];
   bool _isTrainer = false;
   Exercise? _currentExercise;
+  Timer? _timer;
 
   Future<void> _onJoinRequested(
     JoinRequested event,
@@ -101,25 +103,73 @@ class PhoneSessionBloc extends Bloc<PhoneSessionEvent, PhoneSessionState> {
     ));
   }
 
+  void _startTimer(int seconds) {
+    _timer?.cancel();
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      add(const TimerTick());
+    });
+  }
+
   void _onPhaseChanged(PhonePhaseChanged update, Emitter<PhoneSessionState> emit) {
+    _timer?.cancel();
     switch (update.phase) {
       case SessionPhase.countdown:
         emit(PhoneCountdownState(workoutName: update.workoutName ?? ''));
       case SessionPhase.warmup:
         _currentExercise = update.exercise;
         if (_currentExercise != null) {
-          emit(PhoneWarmupState(exercise: _currentExercise!));
+          final total = _currentExercise!.executionSeconds;
+          emit(PhoneWarmupState(
+            exercise: _currentExercise!,
+            secondsRemaining: total,
+          ));
+          _startTimer(total);
         }
-      case SessionPhase.challenge:
+      case SessionPhase.exercise:
         _currentExercise = update.exercise;
         if (_currentExercise != null) {
-          emit(PhoneChallengeState(
+          final total = _currentExercise!.executionSeconds;
+          emit(PhoneExerciseState(
+            exercise: _currentExercise!,
+            secondsRemaining: total,
+          ));
+          _startTimer(total);
+        }
+      case SessionPhase.rest:
+        _currentExercise = update.exercise;
+        if (_currentExercise != null) {
+          emit(PhoneRestState(
             exercise: _currentExercise!,
             hasSubmitted: false,
           ));
         }
       case SessionPhase.result:
         emit(const PhoneResultState());
+    }
+  }
+
+  void _onTimerTick(TimerTick event, Emitter<PhoneSessionState> emit) {
+    final current = state;
+    if (current is PhoneWarmupState) {
+      final remaining = current.secondsRemaining - 1;
+      if (remaining <= 0) {
+        _timer?.cancel();
+      } else {
+        emit(PhoneWarmupState(
+          exercise: current.exercise,
+          secondsRemaining: remaining,
+        ));
+      }
+    } else if (current is PhoneExerciseState) {
+      final remaining = current.secondsRemaining - 1;
+      if (remaining <= 0) {
+        _timer?.cancel();
+      } else {
+        emit(PhoneExerciseState(
+          exercise: current.exercise,
+          secondsRemaining: remaining,
+        ));
+      }
     }
   }
 
@@ -151,8 +201,8 @@ class PhoneSessionBloc extends Bloc<PhoneSessionEvent, PhoneSessionState> {
     if (_currentExercise == null) return;
     await _service.submitResult(_currentExercise!.id, event.value);
     if (emit.isDone) return;
-    if (state is PhoneChallengeState) {
-      emit(PhoneChallengeState(
+    if (state is PhoneRestState) {
+      emit(PhoneRestState(
         exercise: _currentExercise!,
         hasSubmitted: true,
       ));
@@ -161,6 +211,7 @@ class PhoneSessionBloc extends Bloc<PhoneSessionEvent, PhoneSessionState> {
 
   @override
   Future<void> close() {
+    _timer?.cancel();
     _subscription.cancel();
     _service.dispose();
     return super.close();

@@ -8,6 +8,9 @@ class Exercise extends Equatable {
     required this.name,
     required this.instruction,
     required this.metricType,
+    this.executionSeconds = 0,
+    this.inputWindowSeconds = 0,
+    this.imagePath,
   });
 
   factory Exercise.fromRow(Map<String, dynamic> row) {
@@ -18,6 +21,9 @@ class Exercise extends Equatable {
       metricType: (row['metric_type'] as String?) == 'seconds'
           ? MetricType.seconds
           : MetricType.reps,
+      executionSeconds: (row['execution_seconds'] as int?) ?? 0,
+      inputWindowSeconds: (row['input_window_seconds'] as int?) ?? 0,
+      imagePath: row['image_path'] as String?,
     );
   }
 
@@ -25,7 +31,10 @@ class Exercise extends Equatable {
   final String name;
   final String instruction;
   final MetricType metricType;
+  final int executionSeconds;
+  final int inputWindowSeconds;
+  final String? imagePath;
 
   @override
-  List<Object?> get props => [id, name, instruction, metricType];
+  List<Object?> get props => [id, name, instruction, metricType, executionSeconds, inputWindowSeconds, imagePath];
 }

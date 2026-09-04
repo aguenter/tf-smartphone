@@ -2,7 +2,7 @@ import 'package:equatable/equatable.dart';
 
 enum SessionStatus { waiting, selecting, running, ended }
 
-enum SessionPhase { countdown, warmup, challenge, result }
+enum SessionPhase { countdown, warmup, exercise, rest, result }
 
 class Session extends Equatable {
   const Session({

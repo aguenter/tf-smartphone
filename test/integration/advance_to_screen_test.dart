@@ -147,17 +147,26 @@ void main() {
 
     if (targetScreen == 3 || targetScreen == 4) return;
 
-    // T5+: advance through warmup → challenges with result submission.
+    // T5+: advance through warmup → countdown → exercise/rest cycles.
     if (targetScreen >= 5) {
       // Let the TV show warmup briefly.
       await Future<void>.delayed(const Duration(seconds: 3));
 
-      // warmup → challenge (index 1)
+      // warmup → second countdown
       await _phone1.rpc('advance_phase', params: {
         'p_session_id': sessionId,
       });
       // ignore: avoid_print
-      print('T5: first challenge started.');
+      print('T3b: second countdown started.');
+
+      await Future<void>.delayed(const Duration(seconds: 3));
+
+      // second countdown → first exercise
+      await _phone1.rpc('advance_phase', params: {
+        'p_session_id': sessionId,
+      });
+      // ignore: avoid_print
+      print('T5: first exercise started.');
 
       // Fetch exercises to know how many challenges and their IDs.
       final w1Id = (await _phone1
@@ -182,7 +191,12 @@ void main() {
         // Let the TV show the exercise briefly.
         await Future<void>.delayed(const Duration(seconds: 2));
 
-        // Submit results from all phones.
+        // exercise → rest
+        await _phone1.rpc('advance_phase', params: {
+          'p_session_id': sessionId,
+        });
+
+        // Submit results from all phones during rest.
         for (var i = 0; i < phones.length; i++) {
           await phones[i].rpc('submit_result', params: {
             'p_session_id': sessionId,
@@ -191,11 +205,11 @@ void main() {
           });
         }
         // ignore: avoid_print
-        print('Challenge ${c + 1}/${challenges.length}: ${challenges[c]['name']} — results submitted.');
+        print('Exercise ${c + 1}/${challenges.length}: ${challenges[c]['name']} — results submitted.');
 
         await Future<void>.delayed(const Duration(seconds: 1));
 
-        // Advance to next challenge or result.
+        // rest → next exercise or result.
         await _phone1.rpc('advance_phase', params: {
           'p_session_id': sessionId,
         });

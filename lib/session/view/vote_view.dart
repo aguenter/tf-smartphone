@@ -19,12 +19,12 @@ class VoteView extends StatelessWidget {
         children: [
           const SizedBox(height: 16),
           Text(
-            'Workout wählen',
+            'CHOOSE WORKOUT',
             style: Theme.of(context).textTheme.headlineSmall,
           ),
           const SizedBox(height: 8),
           Text(
-            '${state.participants.length} Teilnehmer',
+            '${state.participants.length} Participants',
             style: Theme.of(context).textTheme.bodyMedium,
           ),
           const SizedBox(height: 16),

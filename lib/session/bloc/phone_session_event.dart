@@ -50,3 +50,7 @@ class ResultEntered extends PhoneSessionEvent {
   @override
   List<Object?> get props => [value];
 }
+
+class TimerTick extends PhoneSessionEvent {
+  const TimerTick();
+}

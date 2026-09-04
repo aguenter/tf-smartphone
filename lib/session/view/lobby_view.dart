@@ -25,12 +25,14 @@ class LobbyView extends StatelessWidget {
           const Icon(Icons.people, size: 64),
           const SizedBox(height: 16),
           Text(
-            'Warte auf Mitspieler...',
+            participants.length < 2
+                ? 'Ready to Start'
+                : 'Waiting for Players...',
             style: Theme.of(context).textTheme.headlineSmall,
           ),
           const SizedBox(height: 8),
           Text(
-            '${participants.length} Teilnehmer',
+            '${participants.length} Participants',
             style: Theme.of(context).textTheme.bodyLarge,
           ),
           const SizedBox(height: 24),
@@ -55,13 +57,13 @@ class LobbyView extends StatelessWidget {
               },
             ),
           ),
-          if (isTrainer && participants.length >= 2)
+          if (isTrainer)
             FilledButton.icon(
               onPressed: () => context
                   .read<PhoneSessionBloc>()
                   .add(const SelectionStartRequested()),
               icon: const Icon(Icons.play_arrow),
-              label: const Text('Auswahl starten'),
+              label: const Text('Start Selection'),
             ),
         ],
       ),

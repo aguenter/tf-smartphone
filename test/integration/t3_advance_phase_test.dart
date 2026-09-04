@@ -102,45 +102,80 @@ void main() {
       expect(s['current_exercise_index'], 0);
     });
 
-    test('warmup → challenge (index 1)', () async {
+    test('warmup → countdown (index 1)', () async {
+      // countdown → warmup
       await _tv.rpc('advance_phase', params: {'p_session_id': sessionId});
 
       var s = await fetchSession();
       expect(s['phase'], 'warmup');
 
+      // warmup → second countdown
       await _tv.rpc('advance_phase', params: {'p_session_id': sessionId});
 
       s = await fetchSession();
-      expect(s['phase'], 'challenge');
+      expect(s['phase'], 'countdown');
       expect(s['current_exercise_index'], 1);
     });
 
-    test('challenge cycles through all exercises then reaches result',
-        () async {
-      // countdown → warmup
+    test('second countdown → exercise (index 1)', () async {
+      // countdown → warmup → countdown
       await _tv.rpc('advance_phase', params: {'p_session_id': sessionId});
-      // warmup → challenge (index 1)
       await _tv.rpc('advance_phase', params: {'p_session_id': sessionId});
 
-      // Cycle through challenge exercises (index 1..exerciseCount-1).
+      var s = await fetchSession();
+      expect(s['phase'], 'countdown');
+
+      // second countdown → exercise
+      await _tv.rpc('advance_phase', params: {'p_session_id': sessionId});
+
+      s = await fetchSession();
+      expect(s['phase'], 'exercise');
+      expect(s['current_exercise_index'], 1);
+    });
+
+    test('exercise/rest cycles through all exercises then reaches result',
+        () async {
+      // countdown → warmup → countdown → exercise (index 1)
+      await _tv.rpc('advance_phase', params: {'p_session_id': sessionId});
+      await _tv.rpc('advance_phase', params: {'p_session_id': sessionId});
+      await _tv.rpc('advance_phase', params: {'p_session_id': sessionId});
+
       // exerciseCount is 4 (1 warmup + 3 challenges).
-      // index 1 → 2 → 3 → result
-      for (var i = 1; i < exerciseCount - 1; i++) {
-        await _tv.rpc('advance_phase', params: {'p_session_id': sessionId});
-        final s = await fetchSession();
-        expect(s['phase'], 'challenge');
+      // exercise(1) → rest(1) → exercise(2) → rest(2) → exercise(3) → rest(3) → result
+      final challengeCount = exerciseCount - 1; // excluding warmup
+
+      for (var i = 0; i < challengeCount; i++) {
+        var s = await fetchSession();
+        expect(s['phase'], 'exercise');
         expect(s['current_exercise_index'], i + 1);
+
+        // exercise → rest
+        await _tv.rpc('advance_phase', params: {'p_session_id': sessionId});
+        s = await fetchSession();
+        expect(s['phase'], i < challengeCount - 1 ? 'rest' : 'rest');
+
+        if (i < challengeCount - 1) {
+          // rest → next exercise
+          await _tv.rpc('advance_phase', params: {'p_session_id': sessionId});
+        }
       }
 
-      // Last advance: challenge → result.
+      // Last rest → result
       await _tv.rpc('advance_phase', params: {'p_session_id': sessionId});
       final s = await fetchSession();
       expect(s['phase'], 'result');
     });
 
     test('advance_phase after result throws', () async {
-      // Fast-forward to result.
-      for (var i = 0; i < exerciseCount + 1; i++) {
+      // Fast-forward to result:
+      // countdown → warmup → countdown → [exercise → rest] × N → result
+      // 3 initial phases + 2 per challenge exercise
+      await _tv.rpc('advance_phase', params: {'p_session_id': sessionId});
+      await _tv.rpc('advance_phase', params: {'p_session_id': sessionId});
+      await _tv.rpc('advance_phase', params: {'p_session_id': sessionId});
+      final challengeCount = exerciseCount - 1;
+      for (var i = 0; i < challengeCount; i++) {
+        await _tv.rpc('advance_phase', params: {'p_session_id': sessionId});
         await _tv.rpc('advance_phase', params: {'p_session_id': sessionId});
       }
       final s = await fetchSession();

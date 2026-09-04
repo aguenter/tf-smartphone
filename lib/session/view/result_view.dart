@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../app/shared/theme.dart';
+
 class ResultView extends StatelessWidget {
   const ResultView({super.key});
 
@@ -11,19 +13,16 @@ class ResultView extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.emoji_events, size: 80, color: Colors.amber),
+            Icon(Icons.emoji_events, size: 80, color: TeamfitColors.streak500),
             const SizedBox(height: 24),
             Text(
-              'Ergebnisse',
-              style: Theme.of(context)
-                  .textTheme
-                  .headlineMedium
-                  ?.copyWith(fontWeight: FontWeight.bold),
+              'RESULTS',
+              style: Theme.of(context).textTheme.displaySmall,
             ),
             const SizedBox(height: 16),
             Text(
-              'Schau auf den TV!',
-              style: Theme.of(context).textTheme.titleLarge,
+              'Watch the TV!',
+              style: Theme.of(context).textTheme.bodyLarge,
             ),
           ],
         ),

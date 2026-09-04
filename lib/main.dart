@@ -5,6 +5,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'app/service/supabase_service.dart';
 import 'app/shared/constants.dart';
 import 'app/shared/router.dart';
+import 'app/shared/theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,6 +26,7 @@ class TeamfitApp extends StatelessWidget {
       child: MaterialApp.router(
         title: AppConstants.appName,
         debugShowCheckedModeBanner: false,
+        theme: TeamfitTheme.dark(),
         routerConfig: appRouter,
       ),
     );

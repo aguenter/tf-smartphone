@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../app/shared/theme.dart';
+
 class CountdownView extends StatelessWidget {
   const CountdownView({super.key, required this.workoutName});
 
@@ -13,24 +15,19 @@ class CountdownView extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.timer, size: 80),
+            Text(
+              workoutName.toUpperCase(),
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
+            const SizedBox(height: 16),
+            Icon(
+              Icons.timer,
+              size: 64,
+              color: TeamfitColors.streak500,
+            ),
             const SizedBox(height: 24),
             Text(
-              'Mach dich bereit!',
-              style: Theme.of(context)
-                  .textTheme
-                  .headlineMedium
-                  ?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              workoutName,
-              style: Theme.of(context).textTheme.titleLarge,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 32),
-            Text(
-              'Schau auf den TV',
+              'Watch the TV',
               style: Theme.of(context).textTheme.bodyLarge,
             ),
           ],

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../app/shared/constants.dart';
+import '../../app/shared/theme.dart';
+
 class EndView extends StatelessWidget {
   const EndView({super.key});
 
@@ -11,19 +14,24 @@ class EndView extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.sports_score, size: 80),
-            const SizedBox(height: 24),
             Text(
-              'Session beendet',
-              style: Theme.of(context)
-                  .textTheme
-                  .headlineMedium
-                  ?.copyWith(fontWeight: FontWeight.bold),
+              'THANKS!',
+              style: Theme.of(context).textTheme.displaySmall,
             ),
             const SizedBox(height: 16),
             Text(
-              'Danke fürs Mitmachen!',
-              style: Theme.of(context).textTheme.titleLarge,
+              'See you next time!',
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    color: TeamfitColors.textOnInverseMuted,
+                  ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 24),
+            Text(
+              AppConstants.appName.toUpperCase(),
+              style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                    color: TeamfitColors.streak500,
+                  ),
             ),
           ],
         ),

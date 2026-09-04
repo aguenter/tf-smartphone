@@ -87,15 +87,33 @@ class PhoneCountdownState extends PhoneSessionState {
 }
 
 class PhoneWarmupState extends PhoneSessionState {
-  const PhoneWarmupState({required this.exercise});
+  const PhoneWarmupState({
+    required this.exercise,
+    required this.secondsRemaining,
+  });
+
   final Exercise exercise;
+  final int secondsRemaining;
 
   @override
-  List<Object?> get props => [exercise];
+  List<Object?> get props => [exercise, secondsRemaining];
 }
 
-class PhoneChallengeState extends PhoneSessionState {
-  const PhoneChallengeState({
+class PhoneExerciseState extends PhoneSessionState {
+  const PhoneExerciseState({
+    required this.exercise,
+    required this.secondsRemaining,
+  });
+
+  final Exercise exercise;
+  final int secondsRemaining;
+
+  @override
+  List<Object?> get props => [exercise, secondsRemaining];
+}
+
+class PhoneRestState extends PhoneSessionState {
+  const PhoneRestState({
     required this.exercise,
     required this.hasSubmitted,
   });

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../app/shared/theme.dart';
 import '../bloc/phone_session_bloc.dart';
 import '../bloc/phone_session_event.dart';
 
@@ -51,42 +52,41 @@ class _JoinViewState extends State<JoinView> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              'Teamfit',
-              style: Theme.of(context)
-                  .textTheme
-                  .headlineLarge
-                  ?.copyWith(fontWeight: FontWeight.bold),
+              'TEAMFIT',
+              style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                    color: TeamfitColors.brand,
+                  ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 48),
             TextFormField(
               controller: _sessionController,
               decoration: const InputDecoration(
-                labelText: 'Session-Code',
+                labelText: 'Session Code',
                 border: OutlineInputBorder(),
                 prefixIcon: Icon(Icons.qr_code),
               ),
               validator: (v) =>
-                  (v == null || v.trim().isEmpty) ? 'Bitte Code eingeben' : null,
+                  (v == null || v.trim().isEmpty) ? 'Please enter a code' : null,
             ),
             const SizedBox(height: 16),
             TextFormField(
               controller: _nameController,
               decoration: const InputDecoration(
-                labelText: 'Dein Name',
+                labelText: 'Your Name',
                 border: OutlineInputBorder(),
                 prefixIcon: Icon(Icons.person),
               ),
               textCapitalization: TextCapitalization.words,
               validator: (v) =>
-                  (v == null || v.trim().isEmpty) ? 'Bitte Namen eingeben' : null,
+                  (v == null || v.trim().isEmpty) ? 'Please enter your name' : null,
               onFieldSubmitted: (_) => _submit(),
             ),
             const SizedBox(height: 24),
             FilledButton.icon(
               onPressed: _submit,
               icon: const Icon(Icons.login),
-              label: const Text('Beitreten'),
+              label: const Text('Join'),
             ),
           ],
         ),

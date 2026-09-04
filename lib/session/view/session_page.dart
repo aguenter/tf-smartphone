@@ -5,11 +5,12 @@ import '../../app/shared/constants.dart';
 import '../bloc/phone_session_bloc.dart';
 import '../bloc/phone_session_state.dart';
 import '../service/phone_session_service.dart';
-import 'challenge_view.dart';
 import 'countdown_view.dart';
 import 'end_view.dart';
+import 'exercise_mirror_view.dart';
 import 'join_view.dart';
 import 'lobby_view.dart';
+import 'rest_input_view.dart';
 import 'result_view.dart';
 import 'vote_view.dart';
 import 'warmup_view.dart';
@@ -43,8 +44,15 @@ class SessionPage extends StatelessWidget {
               PhoneCountdownState() => CountdownView(
                 workoutName: state.workoutName,
               ),
-              PhoneWarmupState() => WarmupView(exercise: state.exercise),
-              PhoneChallengeState() => ChallengeView(
+              PhoneWarmupState() => WarmupView(
+                exercise: state.exercise,
+                secondsRemaining: state.secondsRemaining,
+              ),
+              PhoneExerciseState() => ExerciseMirrorView(
+                exercise: state.exercise,
+                secondsRemaining: state.secondsRemaining,
+              ),
+              PhoneRestState() => RestInputView(
                 exercise: state.exercise,
                 hasSubmitted: state.hasSubmitted,
               ),
@@ -92,7 +100,7 @@ class _ErrorView extends StatelessWidget {
             const Icon(Icons.error_outline, size: 48, color: Colors.red),
             const SizedBox(height: 16),
             Text(
-              'Fehler beim Beitreten',
+              'Failed to Join',
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 8),

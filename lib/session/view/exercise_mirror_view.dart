@@ -4,8 +4,8 @@ import '../model/exercise.dart';
 import '../widget/exercise_icon.dart';
 import '../widget/progress_ring.dart';
 
-class WarmupView extends StatelessWidget {
-  const WarmupView({
+class ExerciseMirrorView extends StatelessWidget {
+  const ExerciseMirrorView({
     super.key,
     required this.exercise,
     required this.secondsRemaining,
