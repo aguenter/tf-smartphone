@@ -1,0 +1,3 @@
+tags:
+  integration:
+    skip: "Requires a running Supabase instance (supabase start)"
