@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../app/shared/constants.dart';
+import '../../app/shared/lifecycle_reporter.dart';
 import '../bloc/phone_session_bloc.dart';
+import '../bloc/phone_session_event.dart';
 import '../bloc/phone_session_state.dart';
 import '../service/phone_session_service.dart';
 import 'countdown_view.dart';
@@ -29,36 +31,47 @@ class SessionPage extends StatelessWidget {
           anonKey: AppConstants.supabaseAnonKey,
         ),
       ),
-      child: Scaffold(
-        body: SafeArea(
-          child: BlocBuilder<PhoneSessionBloc, PhoneSessionState>(
-            builder: (context, state) => switch (state) {
-              PhoneInitialState() => JoinView(prefillSessionId: sessionId),
-              PhoneJoiningState() => const _Loading('Beitreten...'),
-              PhoneErrorState(:final message) => _ErrorView(message: message),
-              PhoneLobbyState() => LobbyView(
-                participants: state.participants,
-                isTrainer: state.isTrainer,
+      // Builder, damit der Kontext unterhalb des BlocProvider liegt und den
+      // PhoneSessionBloc lesen kann; LifecycleReporter stößt beim
+      // Wiedererscheinen die sofortige Restzeit-Neuberechnung an.
+      child: Builder(
+        builder: (context) => LifecycleReporter(
+          onResume: () =>
+              context.read<PhoneSessionBloc>().add(const LifecycleResumed()),
+          child: Scaffold(
+            body: SafeArea(
+              child: BlocBuilder<PhoneSessionBloc, PhoneSessionState>(
+                builder: (context, state) => switch (state) {
+                  PhoneInitialState() => JoinView(prefillSessionId: sessionId),
+                  PhoneJoiningState() => const _Loading('Beitreten...'),
+                  PhoneErrorState(:final message) => _ErrorView(
+                    message: message,
+                  ),
+                  PhoneLobbyState() => LobbyView(
+                    participants: state.participants,
+                    isTrainer: state.isTrainer,
+                  ),
+                  PhoneSelectingState() => VoteView(state: state),
+                  PhoneCountdownState() => CountdownView(
+                    workoutName: state.workoutName,
+                  ),
+                  PhoneWarmupState() => WarmupView(
+                    exercise: state.exercise,
+                    secondsRemaining: state.secondsRemaining,
+                  ),
+                  PhoneExerciseState() => ExerciseMirrorView(
+                    exercise: state.exercise,
+                    secondsRemaining: state.secondsRemaining,
+                  ),
+                  PhoneRestState() => RestInputView(
+                    exercise: state.exercise,
+                    hasSubmitted: state.hasSubmitted,
+                  ),
+                  PhoneResultState() => const ResultView(),
+                  PhoneEndedState() => const EndView(),
+                },
               ),
-              PhoneSelectingState() => VoteView(state: state),
-              PhoneCountdownState() => CountdownView(
-                workoutName: state.workoutName,
-              ),
-              PhoneWarmupState() => WarmupView(
-                exercise: state.exercise,
-                secondsRemaining: state.secondsRemaining,
-              ),
-              PhoneExerciseState() => ExerciseMirrorView(
-                exercise: state.exercise,
-                secondsRemaining: state.secondsRemaining,
-              ),
-              PhoneRestState() => RestInputView(
-                exercise: state.exercise,
-                hasSubmitted: state.hasSubmitted,
-              ),
-              PhoneResultState() => const ResultView(),
-              PhoneEndedState() => const EndView(),
-            },
+            ),
           ),
         ),
       ),

@@ -54,3 +54,13 @@ class ResultEntered extends PhoneSessionEvent {
 class TimerTick extends PhoneSessionEvent {
   const TimerTick();
 }
+
+/// Die App/der Tab ist wieder sichtbar (Page Visibility → `resumed`).
+///
+/// Browser drosseln oder pausieren Timer im Hintergrund; der Tick bleibt aus
+/// und die Restzeit würde einfrieren. Der Handler rechnet die Restzeit aus dem
+/// gespeicherten Ziel-Zeitpunkt neu und korrigiert die Anzeige sofort beim
+/// Zurückkehren.
+class LifecycleResumed extends PhoneSessionEvent {
+  const LifecycleResumed();
+}

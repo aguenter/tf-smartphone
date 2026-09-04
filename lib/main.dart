@@ -6,6 +6,7 @@ import 'app/service/supabase_service.dart';
 import 'app/shared/constants.dart';
 import 'app/shared/router.dart';
 import 'app/shared/theme.dart';
+import 'app/shared/wakelock_guard.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,11 +24,13 @@ class TeamfitApp extends StatelessWidget {
         url: AppConstants.supabaseUrl,
         anonKey: AppConstants.supabaseAnonKey,
       ),
-      child: MaterialApp.router(
-        title: AppConstants.appName,
-        debugShowCheckedModeBanner: false,
-        theme: TeamfitTheme.dark(),
-        routerConfig: appRouter,
+      child: WakelockGuard(
+        child: MaterialApp.router(
+          title: AppConstants.appName,
+          debugShowCheckedModeBanner: false,
+          theme: TeamfitTheme.dark(),
+          routerConfig: appRouter,
+        ),
       ),
     );
   }

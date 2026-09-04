@@ -7,10 +7,7 @@ import '../view/app_view.dart';
 final GoRouter appRouter = GoRouter(
   initialLocation: '/',
   routes: [
-    GoRoute(
-      path: '/',
-      builder: (context, state) => const AppView(),
-    ),
+    GoRoute(path: '/', builder: (context, state) => const AppView()),
     GoRoute(
       path: '/join',
       builder: (context, state) {
@@ -18,9 +15,6 @@ final GoRouter appRouter = GoRouter(
         return SessionPage(sessionId: sessionId);
       },
     ),
-    GoRoute(
-      path: '/home',
-      builder: (context, state) => const HomeView(),
-    ),
+    GoRoute(path: '/home', builder: (context, state) => const HomeView()),
   ],
 );
