@@ -36,17 +36,18 @@ class SessionPage extends StatelessWidget {
               PhoneJoiningState() => const _Loading('Beitreten...'),
               PhoneErrorState(:final message) => _ErrorView(message: message),
               PhoneLobbyState() => LobbyView(
-                  participants: state.participants,
-                  isTrainer: state.isTrainer,
-                ),
+                participants: state.participants,
+                isTrainer: state.isTrainer,
+              ),
               PhoneSelectingState() => VoteView(state: state),
-              PhoneCountdownState() =>
-                CountdownView(workoutName: state.workoutName),
+              PhoneCountdownState() => CountdownView(
+                workoutName: state.workoutName,
+              ),
               PhoneWarmupState() => WarmupView(exercise: state.exercise),
               PhoneChallengeState() => ChallengeView(
-                  exercise: state.exercise,
-                  hasSubmitted: state.hasSubmitted,
-                ),
+                exercise: state.exercise,
+                hasSubmitted: state.hasSubmitted,
+              ),
               PhoneResultState() => const ResultView(),
               PhoneEndedState() => const EndView(),
             },
